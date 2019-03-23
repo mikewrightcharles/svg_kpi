@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="shrink-to-fit=no, initial-ratio=1, width=device-width">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
+</head>
+
+
+<body>
+
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a href="#" class="navbar-brand"><strong>MW</strong></a>
+    <button type="button" data-toggle="collapse" data-target="#dropdown" class="navbar-toggler">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="navbar-collapse collapse" id="dropdown">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item"><a href="#" class="nav-link">Home</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">Samples</a></li>
+            <li class="nav-item"><a href="#" class="nav-link">Contact</a></li>
+        </ul>
+    </div>
+</nav>
+
+<main>
+    <div class="container-flex">
+        <div class="row">
+            <br>
+            <div class="col-sm">
+                <table class="table">
+                    <thead class="thead">
+                        <tr>
+                            <th scope="col">Service</th>
+                            <th scope="col">Timeline</th>    
+                            <th scope="col">Difficulty</th>
+                        </tr>
+                    <tbody>
+                        <tr>
+                            <td scope="row">Web Development</td>
+                            <td scoep="row">3 months</td>
+                            <td scope="row">Medium</td>
+                        </tr>
+                        <tr>
+                            <td scope="row">Database Development</td>
+                            <td scoep="row">4 months</td>
+                            <td scope="row">Hard</td>
+                        </tr>
+                        <tr>
+                            <td scope="row">Dashboard KPI Development</td>
+                            <td scoep="row">2 months</td>
+                            <td scope="row">Easy</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm">
+                <p class="h4" style="font-weight:300;">Charts<p>
+                <div class="card-deck">
+                    <div class="card" style="min-width:400px;">
+                        <div class="card-header">
+                            <p class="h6" style="font-weight:300;">Line Chart</p>
+                        </div>
+                        <div class="card-body" id="kpi_area">
+                          <!--  <svg height="100px" width="200px" style="background-color:grey;" id="line_chart"></svg>-->
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <p class="h6" style="font-weight:300;">Bar Chart</p>
+                        </div>
+                        <div class="card-body" id="kpi_area_2">
+                            <!--<svg height="100px" width="300px" style="background-color:grey;" id="bar_chart"></svg>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+
+
+<footer class="text-center">
+    <br>
+    <p>Copyright 2019</p>
+</footer>
+
+<!-- JavaScript libraries -->
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+
+<script>
+
+
+
+
+var kpi_1 = new KPI(260, 120, "4E9231");
+kpi_1.height(100);  
+kpi_1.width(250); 
+kpi_1.top_padding(20); 
+kpi_1.side_padding(10); 
+kpi_1.text_orientation("right");
+kpi_1.text_color("white");
+kpi_1.add("kpi_area_2");
+
+
+function KPI(set_width, set_height, set_color){
+
+    this.width = (function(width_in){
+        set_width = width_in;
+    });
+    this.height = (function(height_in){
+        set_height = height_in;
+    });
+    this.text_color = (function(color_in){
+        text_color = color_in;
+    }); 
+    this.top_padding = (function(set_t_padding){
+        top_padding = set_t_padding;
+    });
+    this.side_padding = (function(set_s_padding){
+        side_padding = set_s_padding;
+    });
+    this.text_orientation = (function(text_o){
+        text_orientation = text_o;
+    });
+    var left, right, third;
+
+    var measure_font_size = 35;
+    var measure_desc_font_size = 20;
+
+    this.add = (function(id){
+        var kpi_area = document.createElementNS("http://www.w3.org/2000/svg","svg");
+        kpi_area.setAttribute("width", set_width + "px");
+        kpi_area.setAttribute("height", set_height + "px");
+        kpi_area.setAttribute("style","background-color:#" + set_color + ";)");
+
+        if (typeof top_padding === 'undefined'){
+            top_padding = 0;
+        }
+        if (typeof side_padding === 'undefined'){
+            side_padding = 0;
+        }
+
+        set_grid(top_padding, side_padding, set_width, kpi_area);
+        text("46,000", measure_font_size, "40", "measure");
+        text("Items Sold", measure_desc_font_size, "70", "measure_desc");
+
+        var paste_area = document.getElementById(id);
+        paste_area.append(kpi_area);
+    });
+
+    function text(text_content, font_size, y_loc, type){
+        var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+       // var y_pad = this.height - this.padding;
+        text.setAttribute("font-weight","300");
+        if(type === "measure"){
+            console.log("measure!");
+            text.setAttribute("y", top_padding);
+        }
+        if(type === "measure_desc"){
+            console.log("desc!");
+            text.setAttribute("y", measure_font_size + top_padding);
+        }
+        text.setAttribute("font-size",font_size + "px"); 
+        text.setAttribute("fill", this.text_color);
+        text.setAttribute("x","0");
+        text.setAttribute("id",type);
+        text.textContent = text_content;
+        if(this.text_orientation === "left"){
+            text.setAttribute("text-anchor","start");
+            right.append(text);
+        }else{
+            text.setAttribute("text-anchor","end");
+            third.append(text);
+        }
+    }
+
+    function set_grid(top_padding, side_padding, width, kpi_area){
+        left = document.createElementNS("http://www.w3.org/2000/svg","g");
+        var left_x = side_padding;
+        var left_y = top_padding;
+        left.setAttribute("transform", "translate(" + left_x + " " + left_y +")");
+
+        right = document.createElementNS("http://www.w3.org/2000/svg","g");
+        //var right_x = side_padding + ((width - (side_padding*2))/2);
+        var right_x = width/2;
+        var right_y = top_padding;
+        right.setAttribute("transform", "translate(" + right_x + " " + right_y +")");
+
+        third = document.createElementNS("http://www.w3.org/2000/svg","g");
+        var third_x = width - side_padding; 
+        var third_y = top_padding;
+        third.setAttribute("transform", "translate(" + third_x + " " + third_y +")");
+
+        kpi_area.append(left);
+        kpi_area.append(right);
+        kpi_area.append(third);
+    }
+}
+/*
+var svg_width = 300;
+var svg_height = 120;
+var svg_color = "4E9231";
+var padding = 20;
+
+//var kpi_area = document.getElementById("line_chart");
+var kpi_area = document.createElementNS("http://www.w3.org/2000/svg","svg");
+kpi_area.setAttribute("width", svg_width + "px");
+kpi_area.setAttribute("height", svg_height + "px");
+kpi_area.setAttribute("style","background-color:#" + svg_color + ";)");
+
+//Groups
+var left = document.createElementNS("http://www.w3.org/2000/svg","g");
+var left_x = padding;
+var left_y = padding;
+left.setAttribute("transform", "translate(" + left_x + " " + left_y +")");
+
+var right = document.createElementNS("http://www.w3.org/2000/svg","g");
+var right_y = padding;
+var right_x = padding + ((svg_width - (padding*2))/2);
+right.setAttribute("transform", "translate(" + right_x + " " + right_y +")");
+
+var third = document.createElementNS("http://www.w3.org/2000/svg","g");
+var third_y = padding;
+var third_x = svg_width - padding; 
+third.setAttribute("transform", "translate(" + third_x + " " + third_y +")");
+
+//text Orientation 
+var text_orientation = "right";
+
+
+var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+text.setAttribute("font-weight","300");
+text.setAttribute("font-size","2.2rem");
+text.setAttribute("fill","white");
+text.setAttribute("x","0");
+text.setAttribute("y","40");
+text.textContent = "43,190";
+if(text_orientation === "left"){
+    text.setAttribute("text-anchor","start");
+    right.append(text);
+}
+if(text_orientation === "right"){
+    text.setAttribute("text-anchor","end");
+    third.append(text);
+}
+
+var text_desc = document.createElementNS("http://www.w3.org/2000/svg", "text");
+text_desc.setAttribute("font-weight","300");
+text_desc.setAttribute("font-size","1.2rem");
+text_desc.setAttribute("fill","white");
+text_desc.setAttribute("x","0");
+text_desc.setAttribute("y","70");
+text_desc.textContent = "Items Sold";
+if(text_orientation === "left"){
+    text_desc.setAttribute("text-anchor","start");
+    right.append(text_desc);
+}
+if(text_orientation === "right"){
+    text_desc.setAttribute("text-anchor","end");
+    third.append(text_desc);
+}
+
+
+kpi_area.append(left);
+kpi_area.append(right);
+kpi_area.append(third);
+
+
+var paste_area = document.getElementById("kpi_area");
+paste_area.append(kpi_area);
+
+function Text(){
+    this.measure = (function(measure_text){
+        measure = measure_text; 
+    });
+    this.color = (function(){
+
+    });
+}
+*/
+</script>
+
+
+</body>
+</html>
