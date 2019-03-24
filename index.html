@@ -102,195 +102,96 @@
 
 <script>
 
+class KPI{
+    constructor(height, width, color){
+        this.height = height || 100;
+        this.width = width || 200;
+        this.color = color || "black";
 
+        var top_padding, side_padding, text_orientation;
+        this.top_padding = top_padding || 10;
+        this.side_padding = side_padding || 15;
+        this.text_orientation = text_orientation || "right";
 
+        //Non initial text parameters
+        var text, subtext, text_color, measure_font_size, measure_desc_font_size;
+        this.text = text || "0,000";
+        this.subtext = subtext || "measure name";
+        this.text_color = text_color || "white"; 
+        this.measure_font_size = measure_font_size || 38;
+        this.measure_desc_font_size = measure_desc_font_size || 20;
 
-var kpi_1 = new KPI(260, 120, "4E9231");
-kpi_1.height(100);  
-kpi_1.width(250); 
-kpi_1.top_padding(20); 
-kpi_1.side_padding(10); 
-kpi_1.text_orientation("right");
-kpi_1.text_color("white");
-kpi_1.add("kpi_area_2");
+        //Grid
+        var kpi_area, left, right, third;
 
+        //var area_id = "kpi_area";
 
-function KPI(set_width, set_height, set_color){
+    }
+    insertInto(id){
+        this.kpi_area = document.createElementNS("http://www.w3.org/2000/svg","svg");
+        this.kpi_area.setAttribute("width", this.width + "px");
+        this.kpi_area.setAttribute("height", this.height + "px");
+        this.kpi_area.setAttribute("style","background-color:" + this.color + ";)");
 
-    this.width = (function(width_in){
-        set_width = width_in;
-    });
-    this.height = (function(height_in){
-        set_height = height_in;
-    });
-    this.text_color = (function(color_in){
-        text_color = color_in;
-    }); 
-    this.top_padding = (function(set_t_padding){
-        top_padding = set_t_padding;
-    });
-    this.side_padding = (function(set_s_padding){
-        side_padding = set_s_padding;
-    });
-    this.text_orientation = (function(text_o){
-        text_orientation = text_o;
-    });
-    var left, right, third;
-
-    var measure_font_size = 35;
-    var measure_desc_font_size = 20;
-
-    this.add = (function(id){
-        var kpi_area = document.createElementNS("http://www.w3.org/2000/svg","svg");
-        kpi_area.setAttribute("width", set_width + "px");
-        kpi_area.setAttribute("height", set_height + "px");
-        kpi_area.setAttribute("style","background-color:#" + set_color + ";)");
-
-        if (typeof top_padding === 'undefined'){
-            top_padding = 0;
-        }
-        if (typeof side_padding === 'undefined'){
-            side_padding = 0;
-        }
-
-        set_grid(top_padding, side_padding, set_width, kpi_area);
-        text("46,000", measure_font_size, "40", "measure");
-        text("Items Sold", measure_desc_font_size, "70", "measure_desc");
+        this.set_grid(this.top_padding, this.side_padding, this.width);
+        this.set_text(this.text, this.measure_font_size, "measure");
+        this.set_text(this.subtext, this.measure_desc_font_size, "measure_desc");
 
         var paste_area = document.getElementById(id);
-        paste_area.append(kpi_area);
-    });
+        paste_area.append(this.kpi_area);
+    }
+    set_grid(top_padding, side_padding, width){
+        this.left = document.createElementNS("http://www.w3.org/2000/svg","g");
+        var left_x = side_padding;
+        var left_y = top_padding;
+        this.left.setAttribute("transform", "translate(" + left_x + " " + left_y +")");
+        
+        this.right = document.createElementNS("http://www.w3.org/2000/svg","g");
+        var right_x = width/2;
+        var right_y = top_padding;
+        this.right.setAttribute("transform", "translate(" + right_x + " " + right_y +")");
 
-    function text(text_content, font_size, y_loc, type){
+        this.third = document.createElementNS("http://www.w3.org/2000/svg","g");
+        var third_x = width - side_padding; 
+        var third_y = top_padding;
+        this.third.setAttribute("transform", "translate(" + third_x + " " + third_y +")");
+
+        this.kpi_area.append(this.left);
+        this.kpi_area.append(this.right);
+        this.kpi_area.append(this.third);
+    }
+
+    set_text(text_content, font_size, type){
         var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-       // var y_pad = this.height - this.padding;
         text.setAttribute("font-weight","300");
         if(type === "measure"){
-            console.log("measure!");
-            text.setAttribute("y", top_padding);
+            text.setAttribute("y", this.measure_font_size);
         }
         if(type === "measure_desc"){
-            console.log("desc!");
-            text.setAttribute("y", measure_font_size + top_padding);
+            text.setAttribute("y", this.measure_font_size + this.measure_desc_font_size + 5);
         }
-        text.setAttribute("font-size",font_size + "px"); 
+        text.setAttribute("font-size", font_size + "px"); 
         text.setAttribute("fill", this.text_color);
         text.setAttribute("x","0");
         text.setAttribute("id",type);
         text.textContent = text_content;
         if(this.text_orientation === "left"){
             text.setAttribute("text-anchor","start");
-            right.append(text);
+            this.right.append(text);
         }else{
             text.setAttribute("text-anchor","end");
-            third.append(text);
+            this.third.append(text);
         }
     }
+    
 
-    function set_grid(top_padding, side_padding, width, kpi_area){
-        left = document.createElementNS("http://www.w3.org/2000/svg","g");
-        var left_x = side_padding;
-        var left_y = top_padding;
-        left.setAttribute("transform", "translate(" + left_x + " " + left_y +")");
-
-        right = document.createElementNS("http://www.w3.org/2000/svg","g");
-        //var right_x = side_padding + ((width - (side_padding*2))/2);
-        var right_x = width/2;
-        var right_y = top_padding;
-        right.setAttribute("transform", "translate(" + right_x + " " + right_y +")");
-
-        third = document.createElementNS("http://www.w3.org/2000/svg","g");
-        var third_x = width - side_padding; 
-        var third_y = top_padding;
-        third.setAttribute("transform", "translate(" + third_x + " " + third_y +")");
-
-        kpi_area.append(left);
-        kpi_area.append(right);
-        kpi_area.append(third);
-    }
-}
-/*
-var svg_width = 300;
-var svg_height = 120;
-var svg_color = "4E9231";
-var padding = 20;
-
-//var kpi_area = document.getElementById("line_chart");
-var kpi_area = document.createElementNS("http://www.w3.org/2000/svg","svg");
-kpi_area.setAttribute("width", svg_width + "px");
-kpi_area.setAttribute("height", svg_height + "px");
-kpi_area.setAttribute("style","background-color:#" + svg_color + ";)");
-
-//Groups
-var left = document.createElementNS("http://www.w3.org/2000/svg","g");
-var left_x = padding;
-var left_y = padding;
-left.setAttribute("transform", "translate(" + left_x + " " + left_y +")");
-
-var right = document.createElementNS("http://www.w3.org/2000/svg","g");
-var right_y = padding;
-var right_x = padding + ((svg_width - (padding*2))/2);
-right.setAttribute("transform", "translate(" + right_x + " " + right_y +")");
-
-var third = document.createElementNS("http://www.w3.org/2000/svg","g");
-var third_y = padding;
-var third_x = svg_width - padding; 
-third.setAttribute("transform", "translate(" + third_x + " " + third_y +")");
-
-//text Orientation 
-var text_orientation = "right";
-
-
-var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-text.setAttribute("font-weight","300");
-text.setAttribute("font-size","2.2rem");
-text.setAttribute("fill","white");
-text.setAttribute("x","0");
-text.setAttribute("y","40");
-text.textContent = "43,190";
-if(text_orientation === "left"){
-    text.setAttribute("text-anchor","start");
-    right.append(text);
-}
-if(text_orientation === "right"){
-    text.setAttribute("text-anchor","end");
-    third.append(text);
 }
 
-var text_desc = document.createElementNS("http://www.w3.org/2000/svg", "text");
-text_desc.setAttribute("font-weight","300");
-text_desc.setAttribute("font-size","1.2rem");
-text_desc.setAttribute("fill","white");
-text_desc.setAttribute("x","0");
-text_desc.setAttribute("y","70");
-text_desc.textContent = "Items Sold";
-if(text_orientation === "left"){
-    text_desc.setAttribute("text-anchor","start");
-    right.append(text_desc);
-}
-if(text_orientation === "right"){
-    text_desc.setAttribute("text-anchor","end");
-    third.append(text_desc);
-}
+var kpi_1 = new KPI(100, 300, "#4E9231");
+kpi_1.text = "41,000";
+kpi_1.subtext = "Amount of sales";
+kpi_1.insertInto("kpi_area");
 
-
-kpi_area.append(left);
-kpi_area.append(right);
-kpi_area.append(third);
-
-
-var paste_area = document.getElementById("kpi_area");
-paste_area.append(kpi_area);
-
-function Text(){
-    this.measure = (function(measure_text){
-        measure = measure_text; 
-    });
-    this.color = (function(){
-
-    });
-}
-*/
 </script>
 
 
